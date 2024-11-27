@@ -1,0 +1,36 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["stripe"]
+
+[[redirects]]
+  from = "/api/webhook"
+  to = "/.netlify/functions/webhook"
+  status = 200
+  force = true
+  methods = ["POST", "OPTIONS"]
+
+[[redirects]]
+  from = "/*"
+  to = "/dashboard"
+  status = 200
+  conditions = { Role = ["authenticated"] }
+
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 200
+
+[[headers]]
+  for = "/api/webhook"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type, Stripe-Signature"
+    Access-Control-Allow-Methods = "POST, OPTIONS"
+
+[build.environment]
+  NODE_VERSION = "18"
